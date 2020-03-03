@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h>
 #include "mydll.h"
 using namespace std;
 
@@ -33,4 +34,15 @@ __declspec(dllexport)
 int mySub(int a, int b) {
 	cout << "in mySub" << endl;
 	return a - b;
+}
+
+__declspec(dllexport)
+void gettimeofday(struct timeval* tv) {
+	cout << "gettimeofday, c++:" << endl;
+	tv->tv_sec = 100;
+	tv->tv_usec = 200;
+	tv->stTT.aa = 400;
+	tv->stTT.bb = 500;
+	cout << tv->tv_sec<<","<< tv->tv_usec <<",tv->stTT.aa:"<< tv->stTT.aa<<",tv->stTT.bb:"<< tv->stTT.bb<< endl;
+	return;
 }
