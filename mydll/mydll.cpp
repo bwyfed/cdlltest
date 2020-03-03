@@ -8,6 +8,21 @@ using namespace std;
 typedef int(__stdcall *fAnalyzerDataCallBack)(void* pAlarmInfo, unsigned char *pBuffer, unsigned long dwBufSize);
 int __stdcall CLIENT_RealLoadPictureEx(int lLoginID, int nChannelID, fAnalyzerDataCallBack cbAnalyzerData);
 
+// typedef int(__stdcall *fTestCallback)(unsigned char * pBuffer, int bufSize);
+
+unsigned char* gArr = nullptr;
+int gSize = 0;
+
+int __stdcall callback(unsigned char * pBuffer, int bufSize) {
+	cout << "in callback, pBuffer:" << pBuffer << ",bufSize=" << bufSize << endl;
+	for (int i = 0; i < bufSize; i++) {
+		cout << pBuffer[i] << ",";
+	}
+	gArr = pBuffer;
+	gSize = bufSize;
+	cout << endl;
+	return 200;
+}
 
 int __stdcall AnylyzerDataCallBack(void* pAlarmInfo, unsigned char *pBuffer, unsigned long dwBufSize) {
 	cout << "in AnylyzerDataCallBack" << endl;
@@ -38,13 +53,56 @@ unsigned char * myAdd(int a, int b, unsigned char *arr, int size) {
 	*/
 	return arr;
 }
+__declspec(dllexport)
+void getCharArray(unsigned char *arr, int size) {
+	cout << "in getCharArray, size=" << size << endl;
+	for (int i = 0; i < size; i++) {
+		arr[i] = 'a' + i;
+	}
+	return;
+}
 
+__declspec(dllexport)
 void getIntArray(int *arr, int size) {
 	for (int i = 0; i < size; i++) {
 		arr[i] = i + 2;
 	}
 }
+// 模拟CLIENT_RealLoadPictureEx的内部实现
+int invokeCallback(int a, int b, fTestCallback cb) {
+	unsigned char * arr = nullptr;
+	int size = 0;
+	int result = 0;
+	if (a > b) {
+		arr = new unsigned char[a];
+		for (int i = 0; i < a; i++) {
+			arr[i] = 'a' + i;
+		}
+		result = cb(arr, a);
+	}
+	else {
+		arr = new unsigned char[b];
+		for (int i = 0; i < b; i++) {
+			arr[i] = 'z' - i;
+		}
+		result = cb(arr, b);
+	}
+	return result;
+}
 
+// 外面要调用的函数
+__declspec(dllexport)
+void testInvokeCallback(int a, int b, unsigned char *out, int* size) {
+	cout << "in testInvokeCallback, a=" << a << ",b="<<b << endl;
+	int invokeRes = invokeCallback(a, b, callback); // invokeCallback == CLIENT_RealLoadPictureEx
+	if (invokeRes == 200) {
+//		out = gArr;
+		*size = gSize;
+		for (int i = 0; i < *size; i++) {
+			out[i] = gArr[i];
+		}
+	}
+}
 __declspec(dllexport)
 int mySub(int a, int b) {
 	cout << "in mySub" << endl;
