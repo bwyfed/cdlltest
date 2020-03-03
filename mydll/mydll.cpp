@@ -23,11 +23,26 @@ __declspec(dllexport)
 unsigned char * myAdd(int a, int b, unsigned char *arr, int size) {
 	cout << "in myAdd, a="<<a<<",b="<< b << endl;
 	CLIENT_RealLoadPictureEx(12345, 54321, AnylyzerDataCallBack);
-	arr = new unsigned char[size];
+	// arr 指针，在外已经分配了空间了，可以直接赋值
+//	arr = new unsigned char[size];
 	for (int i = 0; i < size; i++) {
 		arr[i] = 'c' + i;
 	}
+	// 试图使用以下的类型转换来获取int数组的方式，是可行的吗？
+	// 经测试是不可行的
+	/*
+	int *intArr = reinterpret_cast<int *>(arr);
+	for (int i = 0; i < size/4; i++) {
+		intArr[i] = i + 2;
+	}
+	*/
 	return arr;
+}
+
+void getIntArray(int *arr, int size) {
+	for (int i = 0; i < size; i++) {
+		arr[i] = i + 2;
+	}
 }
 
 __declspec(dllexport)
