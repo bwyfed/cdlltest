@@ -7,6 +7,7 @@ int main() {
 	int a = 5, b = 6;
 	unsigned char *arr = nullptr;
 	int size = 10;
+	arr = new unsigned char[size];
 	unsigned char *myarr = myAdd(a, b, arr, size);
 	printf("调用mydll函数myAdd的函数结果：\n");
 	printf("start print myarr:\n");
